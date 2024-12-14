@@ -12,7 +12,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
+            <version>4.13.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-mockito-release-full -->
@@ -39,6 +39,13 @@
                         <version>3.0.0-M5</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+        <!-- SonarQube Maven Plugin -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
             </plugin>
         </plugins>
     </build>
