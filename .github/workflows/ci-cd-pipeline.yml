@@ -47,7 +47,7 @@ jobs:
       - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar -Dsonar.projectKey=Impacta_UnitTesting -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
   docker-build-push:
     name: Build and Push Docker Image
@@ -74,6 +74,16 @@ jobs:
             --label "org.opencontainers.image.version=latest" \
             -t your-dockerhub-username/ci-cd-pipeline-app:latest .
 
-      # 4. Push Docker Image
+      # 4. Scan Docker Image with Trivy
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@v0.11.0
+        with:
+          image-ref: your-dockerhub-username/ci-cd-pipeline-app:latest
+          severity: CRITICAL,HIGH
+          format: table
+
+
+      # 5. Push Docker Image
       - name: Push Docker Image
+        if: success() # Only push if Trivy scan is successful
         run: docker push your-dockerhub-username/ci-cd-pipeline-app:latest
