@@ -72,7 +72,7 @@ jobs:
           docker build \
             --label "org.opencontainers.image.title=CI/CD Pipeline App" \
             --label "org.opencontainers.image.version=latest" \
-            -t your-dockerhub-username/ci-cd-pipeline-app:latest .
+            -t ${{ secrets.DOCKER_USERNAME }}/ci-cd-pipeline-app:latest .
 
       # 4. Scan Docker Image with Trivy
       - name: Scan Docker Image with Trivy
