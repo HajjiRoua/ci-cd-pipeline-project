@@ -78,7 +78,7 @@ jobs:
       - name: Scan Docker Image with Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: your-dockerhub-username/ci-cd-pipeline-app:latest
+          image-ref: ${{ secrets.DOCKER_USERNAME }}/ci-cd-pipeline-app:latest
           severity: CRITICAL,HIGH
           format: table
 
@@ -86,4 +86,4 @@ jobs:
       # 5. Push Docker Image
       - name: Push Docker Image
         if: success() # Only push if Trivy scan is successful
-        run: docker push your-dockerhub-username/ci-cd-pipeline-app:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/ci-cd-pipeline-app:latest
