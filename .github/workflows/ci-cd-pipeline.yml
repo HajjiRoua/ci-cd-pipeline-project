@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'temurin' # OpenJDK distribution
+          distribution: temurin
           cache: maven
 
       # 4. Build the project with Maven
@@ -43,11 +43,22 @@ jobs:
       - name: Run Unit Tests
         run: mvn test
 
-      # 6. SonarQube Analysis
-      - name: SonarQube Analysis
+      # 6. Generate Jacoco Coverage Report
+      - name: Generate Coverage Report
+        run: mvn jacoco:report
+
+      # 7. SonarCloud Analysis
+      - name: SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.projectKey=HajjiRoua_ci-cd-pipeline-project -Dsonar.organization=hajjiroua -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.java.binaries=target/ 
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.projectKey=HajjiRoua_ci-cd-pipeline-project \
+            -Dsonar.organization=hajjiroua \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.java.binaries=target/
 
   docker-build-push:
     name: Build and Push Docker Image
@@ -76,14 +87,13 @@ jobs:
 
       # 4. Scan Docker Image with Trivy
       - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: ${{ secrets.DOCKER_USERNAME }}/ci-cd-pipeline-app:latest
           severity: CRITICAL,HIGH
           format: table
 
-
       # 5. Push Docker Image
       - name: Push Docker Image
-        if: success() # Only push if Trivy scan is successful
+        if: success()
         run: docker push ${{ secrets.DOCKER_USERNAME }}/ci-cd-pipeline-app:latest
